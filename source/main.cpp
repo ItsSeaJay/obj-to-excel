@@ -4,7 +4,27 @@
 
 int main(int argc, char const *argv[])
 {
+  struct Program
+  {
+    std::string name = "OBJ to Excel";
+    std::string version = "v0.0.1";
+  };
 
+  struct Vertex
+  {
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+  };
+
+  struct Face
+  {
+    Vertex a;
+    Vertex b;
+    Vertex c;
+  };
+
+  Program program;
 
   if (argc > 1)
   {
@@ -15,7 +35,7 @@ int main(int argc, char const *argv[])
   }
   else
   {
-    std::cout << "Bar";
+    std::cout << program.name << '\0' << program.version;
   }
 
   return 0;
