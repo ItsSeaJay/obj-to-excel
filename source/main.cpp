@@ -1,3 +1,10 @@
+
+/*
+  OBJ to Excel by Callum John Cummings v0.0.2
+  Released under the MIT License
+  See LICENSE.txt or https://opensource.org/licenses/MIT for more information.
+*/
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -7,7 +14,7 @@ int main(int argc, char const *argv[])
   struct Program
   {
     std::string name = "OBJ to Excel";
-    std::string version = "v0.0.1";
+    std::string version = "v0.0.2";
   };
 
   struct Vertex
