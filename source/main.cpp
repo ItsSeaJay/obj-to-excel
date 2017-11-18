@@ -18,11 +18,29 @@ int main(int argc, char const *argv[])
     std::string version = "v0.0.2";
   };
 
+  Program program;
+
+  void parseObjectFile(std::string const filePath);
+
+  if (argc > 1)
+  {
+    parseObjectFile(argv[1]);
+  }
+  else
+  {
+    std::cout << program.name << '\0' << program.version;
+  }
+
+  return 0;
+}
+
+void parseObjectFile(std::string const path)
+{
   struct Vertex
   {
-    double x = 0.0;
-    double y = 0.0;
-    double z = 0.0;
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
   };
 
   struct Face
@@ -32,33 +50,29 @@ int main(int argc, char const *argv[])
     Vertex c;
   };
 
-  Program program;
   std::ifstream objectFile;
 
-  if (argc > 1)
+  objectFile.open(path, std::ios::in);
+
+  if (!objectFile.fail())
   {
-    objectFile.open(argv[1], std::ios::in);
+    std::string line;
 
-    if (!objectFile.fail())
+    while (std::getline(objectFile, line))
     {
-      std::string line;
-
-      while (std::getline(objectFile, line))
+      // Find the verticies
+      if (line.find("v ") != std::string::npos)
       {
+        float x, y, z;
+
         std::cout << line << '\n';
       }
     }
-    else
-    {
-      std::cout << "Error: " << argv[1] << " is an invalid file path";
-    }
-
-    objectFile.close();
   }
   else
   {
-    std::cout << program.name << '\0' << program.version;
+    std::cout << "Error: " << path << " is an invalid file path";
   }
 
-  return 0;
+  objectFile.close();
 }
