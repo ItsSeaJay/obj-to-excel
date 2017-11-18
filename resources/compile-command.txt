@@ -1,0 +1,9 @@
+The command to compile the program - for future reference - is:
+
+cl /W4 /EHsc main.cpp /link /out:..\binary\obj-to-excel.exe
+
+then
+
+..\binary\obj-to-excel ..\resources\wizards-tower.obj
+
+to execute.

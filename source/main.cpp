@@ -1,6 +1,6 @@
 
 /*
-  OBJ to Excel by Callum John Cummings v0.0.2
+  OBJ to Excel by Callum J. Cummings v0.0.2
   Released under the MIT License
   See LICENSE.txt or https://opensource.org/licenses/MIT for more information.
 */
@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 
 int main(int argc, char const *argv[])
 {
@@ -32,12 +33,23 @@ int main(int argc, char const *argv[])
   };
 
   Program program;
+  std::ifstream objectFile(argv[1]);
+  std::string line;
 
   if (argc > 1)
   {
-    for (int i = 0; i < argc; ++i)
+    if (objectFile.is_open())
     {
-      std::cout << argv[i];
+      while (getline(objectFile, line))
+      {
+        std::cout << line;
+      }
+
+      objectFile.close();
+    }
+    else
+    {
+      std::cout << "Error: invalid file path";
     }
   }
   else
