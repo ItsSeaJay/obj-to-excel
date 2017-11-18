@@ -136,6 +136,13 @@ void parseObjectFile(std::string const path)
       std::cout << '\n';
     }
 
+    // Helps to distinguish verticies from indicies
+    for (size_t i = 0; i < 80; ++i)
+    {
+      std::cout << '~';
+    }
+    std::cout << '\n';
+
     // Check that the face verticies have also been stored correctly
     for(std::vector<int>::size_type i = 0; i != faces.size(); ++i)
     {
