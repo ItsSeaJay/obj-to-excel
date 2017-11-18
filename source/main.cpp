@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <sstream>
 
 int main(int argc, char const *argv[])
 {
@@ -43,13 +44,16 @@ void parseObjectFile(std::string const path)
     float z = 0.0f;
   };
 
-  struct Face
+  std::vector<Vertex> verticies;
+
+  struct Index
   {
     Vertex a;
     Vertex b;
     Vertex c;
   };
 
+  std::vector<Index> indicies;
   std::ifstream objectFile;
 
   objectFile.open(path, std::ios::in);
@@ -60,11 +64,24 @@ void parseObjectFile(std::string const path)
 
     while (std::getline(objectFile, line))
     {
-      // Find the verticies
+      std::istringstream buffer(line);
+      std::string token;
+
+      // Find lines containing verticies
       if (line.find("v ") != std::string::npos)
       {
         float x, y, z;
+        // Whilst the end of the buffer has not been reached
+        while (buffer >> token)
+        {
+          std::cout << token << '\n';
+        }
+      }
 
+      // Find the faces
+      if (line.find("f ") != std::string::npos)
+      {
+        // Obtain the indicies
         std::cout << line << '\n';
       }
     }
