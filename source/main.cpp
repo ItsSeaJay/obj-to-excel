@@ -39,9 +39,9 @@ void parseObjectFile(std::string const path)
 {
   struct Vertex
   {
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
   };
 
   std::vector<Vertex> verticies;
@@ -51,6 +51,7 @@ void parseObjectFile(std::string const path)
     Vertex a;
     Vertex b;
     Vertex c;
+    Vertex d;
   };
 
   std::vector<Index> indicies;
@@ -65,24 +66,24 @@ void parseObjectFile(std::string const path)
     while (std::getline(objectFile, line))
     {
       std::istringstream buffer(line);
-      std::string token;
+      std::string token, marker;
 
       // Find lines containing verticies
       if (line.find("v ") != std::string::npos)
       {
-        float x, y, z;
-        // Whilst the end of the buffer has not been reached
-        while (buffer >> token)
-        {
-          std::cout << token << '\n';
-        }
+        double x, y, z;
+
+        buffer >> marker >> x >> y >> z;
+        std::cout << marker<< '\0' << x << '\0' << y << '\0' << z << '\n';
+
+        verticies.push_back({x, y, z});
       }
 
       // Find the faces
       if (line.find("f ") != std::string::npos)
       {
         // Obtain the indicies
-        std::cout << line << '\n';
+        // std::cout << line << '\n';
       }
     }
   }
