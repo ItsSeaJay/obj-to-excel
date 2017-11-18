@@ -83,22 +83,6 @@ void parseObjectFile(std::string const path)
       // Find the faces
       if (line.find("f ") != std::string::npos)
       {
-        int const MAX_INDICIES = 4;
-        int faceIndicies[MAX_INDICIES] =
-        {
-          0,
-          0,
-          0,
-          0
-        };
-        int const MAX_NORMALS = 4;
-        int faceNormals[MAX_NORMALS] =
-        {
-          0,
-          0,
-          0,
-          0
-        };
         int tokenCount = 0;
         const int QUAD_TOKENS = 5;
 
@@ -111,13 +95,19 @@ void parseObjectFile(std::string const path)
 
         if (tokenCount == QUAD_TOKENS)
         {
-          std::replace(line.begin(), line.end(), '/', '\0');
-          std::cout << line << '\n';
+          int const MAX_INDICIES = 4;
+          int faceIndicies[MAX_INDICIES] =
+          {
+            0,
+            0,
+            0,
+            0
+          };
 
-          inputBuffer >> marker >> faceIndicies[0] >> faceNormals[0];
-          inputBuffer >> faceIndicies[1] >> faceNormals[1];
-          inputBuffer >> faceIndicies[2] >> faceNormals[2];
-          inputBuffer >> faceIndicies[3] >> faceNormals[3];
+          inputBuffer >> marker >> faceIndicies[0];
+          inputBuffer >> faceIndicies[1];
+          inputBuffer >> faceIndicies[2];
+          inputBuffer >> faceIndicies[3];
 
           faces.push_back({
             {
@@ -147,18 +137,18 @@ void parseObjectFile(std::string const path)
     }
 
     // Check that the face verticies have also been stored correctly
-    // for(std::vector<int>::size_type i = 0; i != faces.size(); ++i)
-    // {
-    //     for (int j = 0; j < MAX_FACE_VERTICIES; ++j)
-    //     {
-    //       std::cout << faces[i].verticies[j].x;
-    //       std::cout << '\0';
-    //       std::cout << faces[i].verticies[j].y;
-    //       std::cout << '\0';
-    //       std::cout << faces[i].verticies[j].z;
-    //       std::cout << '\n';
-    //     }
-    // }
+    for(std::vector<int>::size_type i = 0; i != faces.size(); ++i)
+    {
+        for (int j = 0; j < MAX_FACE_VERTICIES; ++j)
+        {
+          std::cout << faces[i].verticies[j].x;
+          std::cout << '\0';
+          std::cout << faces[i].verticies[j].y;
+          std::cout << '\0';
+          std::cout << faces[i].verticies[j].z;
+          std::cout << '\n';
+        }
+    }
   }
   else
   {

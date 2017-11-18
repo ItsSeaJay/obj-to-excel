@@ -4,6 +4,6 @@ cl /W4 /EHsc main.cpp /link /out:..\binary\obj-to-excel.exe
 
 then
 
-..\binary\obj-to-excel ..\resources\wizards-tower.obj
+..\binary\obj-to-excel ..\resources\test-cube.obj
 
 to execute.
