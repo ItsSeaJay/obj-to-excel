@@ -33,24 +33,27 @@ int main(int argc, char const *argv[])
   };
 
   Program program;
-  std::ifstream objectFile(argv[1]);
-  std::string line;
+  std::ifstream objectFile;
 
   if (argc > 1)
   {
-    if (objectFile.is_open())
-    {
-      while (getline(objectFile, line))
-      {
-        std::cout << line;
-      }
+    objectFile.open(argv[1], std::ios::in);
 
-      objectFile.close();
+    if (!objectFile.fail())
+    {
+      std::string line;
+
+      while (std::getline(objectFile, line))
+      {
+        std::cout << line << '\n';
+      }
     }
     else
     {
-      std::cout << "Error: invalid file path";
+      std::cout << "Error: " << argv[1] << " is an invalid file path";
     }
+
+    objectFile.close();
   }
   else
   {
