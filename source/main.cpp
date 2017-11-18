@@ -1,6 +1,6 @@
 
 /*
-  OBJ to Excel by Callum J. Cummings v0.0.2
+  OBJ to Excel by Callum John v0.0.2
   Released under the MIT License
   See LICENSE.txt or https://opensource.org/licenses/MIT for more information.
 */
