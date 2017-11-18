@@ -5,6 +5,7 @@
   See LICENSE.txt or https://opensource.org/licenses/MIT for more information.
 */
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -46,11 +47,11 @@ void parseObjectFile(std::string const path)
 
   std::vector<Vertex> verticies;
 
-  int const MAX_VERTICIES = 4;
+  int const MAX_FACE_VERTICIES = 4;
 
   struct Face
   {
-      Vertex verticies[MAX_VERTICIES];
+      Vertex verticies[MAX_FACE_VERTICIES];
   };
 
   std::vector<Face> faces;
@@ -66,7 +67,7 @@ void parseObjectFile(std::string const path)
     {
       std::istringstream verificationBuffer(line);
       std::istringstream inputBuffer(line);
-      std::string token, marker, skip;
+      std::string token, marker;
 
       // Find lines containing verticies
       if (line.find("v ") != std::string::npos)
@@ -83,22 +84,23 @@ void parseObjectFile(std::string const path)
       if (line.find("f ") != std::string::npos)
       {
         int const MAX_INDICIES = 4;
-        int faceIndicies[MAX_INDICIES] = {
+        int faceIndicies[MAX_INDICIES] =
+        {
           0,
           0,
           0,
           0
         };
         int const MAX_NORMALS = 4;
-        int faceNormals[MAX_NORMALS] = {
+        int faceNormals[MAX_NORMALS] =
+        {
           0,
           0,
           0,
           0
         };
         int tokenCount = 0;
-        int quadTokens = 5;
-        int triTokens = quadTokens - 1;
+        const int QUAD_TOKENS = 5;
 
         // Find out whether the face is a tri or a quad
         // TODO: Make this a function
@@ -107,49 +109,56 @@ void parseObjectFile(std::string const path)
           ++tokenCount;
         }
 
-        if (tokenCount == quadTokens)
+        if (tokenCount == QUAD_TOKENS)
         {
-          inputBuffer >> marker >> faceIndicies[0] >> skip >> faceNormals[0];
-          inputBuffer >> faceIndicies[1] >> skip >> faceNormals[1];
-          inputBuffer >> faceIndicies[2] >> skip >> faceNormals[2];
-          inputBuffer >> faceIndicies[3] >> skip >> faceNormals[3];
+          std::replace(line.begin(), line.end(), '/', '\0');
+          std::cout << line << '\n';
+
+          inputBuffer >> marker >> faceIndicies[0] >> faceNormals[0];
+          inputBuffer >> faceIndicies[1] >> faceNormals[1];
+          inputBuffer >> faceIndicies[2] >> faceNormals[2];
+          inputBuffer >> faceIndicies[3] >> faceNormals[3];
 
           faces.push_back({
             {
               verticies[faceIndicies[0]],
               verticies[faceIndicies[1]],
               verticies[faceIndicies[2]],
-              verticies[faceIndicies[3]],
+              verticies[faceIndicies[3]]
             }
           });
         }
-        else if (tokenCount == triTokens)
-        {
-          /* code */
-        }
         else
         {
-          /* code */
+          std::cout << "Error: all object faces must be quads.";
         }
       }
     }
 
     // Check that the verticies have been stored correctly
-    for(std::vector<int>::size_type i = 0; i != verticies.size(); ++i)
+    for (std::vector<int>::size_type i = 0; i != verticies.size(); ++i)
     {
-        // std::cout << verticies[i].x << verticies[i].y << verticies[i].z << '\n';
+      std::cout << verticies[i].x;
+      std::cout << '\0';
+      std::cout << verticies[i].y;
+      std::cout << '\0';
+      std::cout << verticies[i].z;
+      std::cout << '\n';
     }
 
     // Check that the face verticies have also been stored correctly
-    for(std::vector<int>::size_type i = 0; i != faces.size(); ++i)
-    {
-        for (int j = 0; j < MAX_VERTICIES; ++j)
-        {
-          std::cout << faces[i].verticies[j].x;
-          std::cout << faces[i].verticies[j].y;
-          std::cout << faces[i].verticies[j].z;
-        }
-    }
+    // for(std::vector<int>::size_type i = 0; i != faces.size(); ++i)
+    // {
+    //     for (int j = 0; j < MAX_FACE_VERTICIES; ++j)
+    //     {
+    //       std::cout << faces[i].verticies[j].x;
+    //       std::cout << '\0';
+    //       std::cout << faces[i].verticies[j].y;
+    //       std::cout << '\0';
+    //       std::cout << faces[i].verticies[j].z;
+    //       std::cout << '\n';
+    //     }
+    // }
   }
   else
   {
