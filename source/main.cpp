@@ -46,15 +46,14 @@ void parseObjectFile(std::string const path)
 
   std::vector<Vertex> verticies;
 
-  struct Index
+  int const MAX_VERTICIES = 4;
+
+  struct Face
   {
-    Vertex a;
-    Vertex b;
-    Vertex c;
-    Vertex d;
+      Vertex verticies[MAX_VERTICIES];
   };
 
-  std::vector<Index> indicies;
+  std::vector<Face> faces;
   std::ifstream objectFile;
 
   objectFile.open(path, std::ios::in);
@@ -65,16 +64,17 @@ void parseObjectFile(std::string const path)
 
     while (std::getline(objectFile, line))
     {
-      std::istringstream buffer(line);
-      std::string token, marker;
+      std::istringstream verificationBuffer(line);
+      std::istringstream inputBuffer(line);
+      std::string token, marker, skip;
 
       // Find lines containing verticies
       if (line.find("v ") != std::string::npos)
       {
         double x, y, z;
 
-        buffer >> marker >> x >> y >> z;
-        std::cout << marker<< '\0' << x << '\0' << y << '\0' << z << '\n';
+        inputBuffer >> marker >> x >> y >> z;
+        // std::cout << x << '\0' << y << '\0' << z << '\n';
 
         verticies.push_back({x, y, z});
       }
@@ -82,9 +82,73 @@ void parseObjectFile(std::string const path)
       // Find the faces
       if (line.find("f ") != std::string::npos)
       {
-        // Obtain the indicies
-        // std::cout << line << '\n';
+        int const MAX_INDICIES = 4;
+        int faceIndicies[MAX_INDICIES] = {
+          0,
+          0,
+          0,
+          0
+        };
+        int const MAX_NORMALS = 4;
+        int faceNormals[MAX_NORMALS] = {
+          0,
+          0,
+          0,
+          0
+        };
+        int tokenCount = 0;
+        int quadTokens = 5;
+        int triTokens = quadTokens - 1;
+
+        // Find out whether the face is a tri or a quad
+        // TODO: Make this a function
+        while (verificationBuffer >> token)
+        {
+          ++tokenCount;
+        }
+
+        if (tokenCount == quadTokens)
+        {
+          inputBuffer >> marker >> faceIndicies[0] >> skip >> faceNormals[0];
+          inputBuffer >> faceIndicies[1] >> skip >> faceNormals[1];
+          inputBuffer >> faceIndicies[2] >> skip >> faceNormals[2];
+          inputBuffer >> faceIndicies[3] >> skip >> faceNormals[3];
+
+          faces.push_back({
+            {
+              verticies[faceIndicies[0]],
+              verticies[faceIndicies[1]],
+              verticies[faceIndicies[2]],
+              verticies[faceIndicies[3]],
+            }
+          });
+        }
+        else if (tokenCount == triTokens)
+        {
+          /* code */
+        }
+        else
+        {
+          /* code */
+        }
       }
+    }
+
+    // Check that the verticies have been stored correctly
+    for(std::vector<int>::size_type i = 0; i != verticies.size(); ++i)
+    {
+        // std::cout << verticies[i].x << verticies[i].y << verticies[i].z << '\n';
+    }
+
+    // Check that the face verticies have also been stored correctly
+    for(std::vector<int>::size_type i = 0; i != faces.size(); ++i)
+    {
+        for (int j = 0; j < MAX_VERTICIES; ++j)
+        {
+          std::cout << faces[i].verticies[j].x;
+          std::cout << faces[i].verticies[j].y;
+          std::cout << faces[i].verticies[j].z;
+        }
     }
   }
   else
