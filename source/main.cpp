@@ -12,6 +12,21 @@
 #include <fstream>
 #include <sstream>
 
+struct Vertex
+{
+  double x = 0.0;
+  double y = 0.0;
+  double z = 0.0;
+  double w = 1.0;
+};
+
+int const MAX_FACE_VERTICIES = 4;
+
+struct Face
+{
+    Vertex verticies[MAX_FACE_VERTICIES];
+};
+
 int main(int argc, char const *argv[])
 {
   struct Program
@@ -38,124 +53,65 @@ int main(int argc, char const *argv[])
 
 void parseObjectFile(std::string const path)
 {
-  struct Vertex
-  {
-    double x = 0.0;
-    double y = 0.0;
-    double z = 0.0;
-  };
-
   std::vector<Vertex> verticies;
-
-  int const MAX_FACE_VERTICIES = 4;
-
-  struct Face
-  {
-      Vertex verticies[MAX_FACE_VERTICIES];
-  };
-
   std::vector<Face> faces;
-  std::ifstream objectFile;
+  std::ifstream objectFile(path);
 
-  objectFile.open(path, std::ios::in);
+  void pushVertex(
+    std::string const currentLine,
+    std::vector<Vertex>& verticies
+  );
 
-  if (!objectFile.fail())
+  void pushFace(
+    std::string const currentLine,
+    std::vector<Vertex> const verticies,
+    std::vector<Face>& faces
+  );
+
+  int getFaceCount(std::string const currentLine);
+
+  void outputVerticies(std::vector<Vertex> const verticies);
+  void outputFaces(std::vector<Face> const faces);
+  void horizontalRule(int const length);
+
+  if (objectFile.is_open())
   {
-    std::string line;
+    std::string currentLine;
 
-    while (std::getline(objectFile, line))
+    while (std::getline(objectFile, currentLine))
     {
-      std::istringstream verificationBuffer(line);
-      std::istringstream inputBuffer(line);
+      std::istringstream verificationBuffer(currentLine);
       std::string token, marker;
 
-      // Find lines containing verticies
-      if (line.find("v ") != std::string::npos)
+      if (currentLine.find("v ") != std::string::npos)
       {
-        double x, y, z;
-
-        inputBuffer >> marker >> x >> y >> z;
-        // std::cout << x << '\0' << y << '\0' << z << '\n';
-
-        verticies.push_back({x, y, z});
+        pushVertex(currentLine, verticies);
       }
 
-      // Find the faces
-      if (line.find("f ") != std::string::npos)
+      if (currentLine.find("f ") != std::string::npos)
       {
         int tokenCount = 0;
         const int QUAD_TOKENS = 5;
 
-        // Find out whether the face is a tri or a quad
-        // TODO: Make this a function
-        while (verificationBuffer >> token)
-        {
-          ++tokenCount;
-        }
+        tokenCount = getFaceCount(currentLine);
 
         if (tokenCount == QUAD_TOKENS)
         {
-          int const MAX_INDICIES = 4;
-          int faceIndicies[MAX_INDICIES] =
-          {
-            0,
-            0,
-            0,
-            0
-          };
-
-          inputBuffer >> marker >> faceIndicies[0];
-          inputBuffer >> faceIndicies[1];
-          inputBuffer >> faceIndicies[2];
-          inputBuffer >> faceIndicies[3];
-
-          faces.push_back({
-            {
-              verticies[faceIndicies[0]],
-              verticies[faceIndicies[1]],
-              verticies[faceIndicies[2]],
-              verticies[faceIndicies[3]]
-            }
-          });
+          pushFace(currentLine, verticies, faces);
         }
         else
         {
-          std::cout << "Error: all object faces must be quads.";
+          std::cout << "Error: invalid file - all object faces must be quads.";
+          return;
         }
       }
     }
 
-    // Check that the verticies have been stored correctly
-    for (std::vector<int>::size_type i = 0; i != verticies.size(); ++i)
-    {
-      std::cout << verticies[i].x;
-      std::cout << '\0';
-      std::cout << verticies[i].y;
-      std::cout << '\0';
-      std::cout << verticies[i].z;
-      std::cout << '\n';
-    }
-
-    // Helps to distinguish verticies from indicies
-    for (size_t i = 0; i < 80; ++i)
-    {
-      std::cout << '~';
-    }
-    std::cout << '\n';
-
-    // Check that the face verticies have also been stored correctly
-    for(std::vector<int>::size_type i = 0; i != faces.size(); ++i)
-    {
-        for (int j = 0; j < MAX_FACE_VERTICIES; ++j)
-        {
-          std::cout << faces[i].verticies[j].x;
-          std::cout << '\0';
-          std::cout << faces[i].verticies[j].y;
-          std::cout << '\0';
-          std::cout << faces[i].verticies[j].z;
-          std::cout << '\n';
-        }
-    }
+    std::cout << '\n' << "Output a file with these results: " << '\n';
+    horizontalRule(80);
+    outputVerticies(verticies);
+    horizontalRule(80);
+    outputFaces(faces);
   }
   else
   {
@@ -163,4 +119,96 @@ void parseObjectFile(std::string const path)
   }
 
   objectFile.close();
+}
+
+void pushVertex(std::string const currentLine, std::vector<Vertex>& verticies)
+{
+  std::istringstream buffer(currentLine);
+  std::string marker;
+  double x, y, z;
+  double w = 1.0;
+
+  buffer >> marker >> x >> y >> z;
+
+  verticies.push_back({x, y, z, w});
+}
+
+void pushFace(
+  std::string const currentLine,
+  std::vector<Vertex> const verticies,
+  std::vector<Face>& faces
+)
+{
+  std::istringstream buffer(currentLine);
+  std::string marker;
+  int const MAX_INDICIES = 4;
+  int faceIndicies[MAX_INDICIES] =
+  {
+    0,
+    0,
+    0,
+    0
+  };
+
+  buffer >> marker >> faceIndicies[0];
+  buffer >> faceIndicies[1];
+  buffer >> faceIndicies[2];
+  buffer >> faceIndicies[3];
+
+  faces.push_back({
+    {
+      verticies[faceIndicies[0]],
+      verticies[faceIndicies[1]],
+      verticies[faceIndicies[2]],
+      verticies[faceIndicies[3]]
+    }
+  });
+}
+
+int getFaceCount(std::string currentLine)
+{
+  int faceCount = 0;
+  std::istringstream buffer(currentLine);
+  std::string token;
+
+  while (buffer >> token)
+  {
+    ++faceCount;
+  }
+
+  return faceCount;
+}
+
+void outputVerticies(std::vector<Vertex> const verticies)
+{
+  for(std::vector<int>::size_type i = 0; i != verticies.size(); i++)
+  {
+    std::cout << verticies[i].x << '\0';
+    std::cout << verticies[i].y << '\0';
+    std::cout << verticies[i].z << '\0';
+    std::cout << verticies[i].w << '\n';
+  }
+}
+
+void outputFaces(std::vector<Face> const faces)
+{
+  for(std::vector<int>::size_type i = 0; i != faces.size(); i++)
+  {
+    for (int j = 0; j < 4; ++j)
+    {
+      std::cout << faces[i].verticies[j].x << '\0';
+      std::cout << faces[i].verticies[j].y << '\0';
+      std::cout << faces[i].verticies[j].z << '\0';
+      std::cout << faces[i].verticies[j].w << '\n';
+    }
+  }
+}
+
+void horizontalRule(int const length)
+{
+  for (int i = 0; i < length; ++i)
+  {
+    std::cout << '~';
+  }
+  std::cout << '\n';
 }
