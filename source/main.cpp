@@ -1,6 +1,6 @@
 
 /*
-  OBJ to Excel by Callum John v0.0.2
+  OBJ to Excel by Callum John v0.0.3
   Released under the MIT License
   See LICENSE.txt or https://opensource.org/licenses/MIT for more information.
 */
@@ -32,7 +32,7 @@ int main(int argc, char const *argv[])
   struct Program
   {
     std::string name = "OBJ to Excel";
-    std::string version = "v0.0.2";
+    std::string version = "v0.0.3";
   };
 
   Program program;
@@ -73,6 +73,7 @@ void parseObjectFile(std::string const path)
   void outputVerticies(std::vector<Vertex> const verticies);
   void outputFaces(std::vector<Face> const faces);
   void horizontalRule(int const length);
+  void outputCSV(std::string const path, std::vector<Face> const faces);
 
   if (objectFile.is_open())
   {
@@ -107,11 +108,13 @@ void parseObjectFile(std::string const path)
       }
     }
 
-    std::cout << '\n' << "Output a file with these results: " << '\n';
+    std::cout << '\n' << "Found the following verticies: " << '\n';
     horizontalRule(80);
     outputVerticies(verticies);
     horizontalRule(80);
     outputFaces(faces);
+    horizontalRule(80);
+    outputCSV(path, faces);
   }
   else
   {
@@ -150,10 +153,16 @@ void pushFace(
     0
   };
 
-  buffer >> marker >> faceIndicies[0];
+  buffer >> marker;
+  buffer >> faceIndicies[0];
   buffer >> faceIndicies[1];
   buffer >> faceIndicies[2];
   buffer >> faceIndicies[3];
+
+  for (int i = 0; i < MAX_INDICIES; i++)
+  {
+    faceIndicies[i] -= 1;
+  }
 
   faces.push_back({
     {
@@ -181,6 +190,8 @@ int getFaceCount(std::string currentLine)
 
 void outputVerticies(std::vector<Vertex> const verticies)
 {
+  std::cout << "Verticies size: " << verticies.size() << '\n';
+
   for(std::vector<int>::size_type i = 0; i != verticies.size(); i++)
   {
     std::cout << verticies[i].x << '\0';
@@ -192,9 +203,11 @@ void outputVerticies(std::vector<Vertex> const verticies)
 
 void outputFaces(std::vector<Face> const faces)
 {
-  for(std::vector<int>::size_type i = 0; i != faces.size(); i++)
+  std::cout << "Faces size: " << faces.size() << '\n';
+
+  for(std::vector<int>::size_type i = 0; i < faces.size(); i++)
   {
-    for (int j = 0; j < 4; ++j)
+    for (int j = 0; j < MAX_FACE_VERTICIES; ++j)
     {
       std::cout << faces[i].verticies[j].x << '\0';
       std::cout << faces[i].verticies[j].y << '\0';
@@ -211,4 +224,30 @@ void horizontalRule(int const length)
     std::cout << '~';
   }
   std::cout << '\n';
+}
+
+void outputCSV(std::string const path, std::vector<Face> const faces)
+{
+  std::ofstream CSVFile(path + ".csv");
+
+  if (CSVFile.is_open())
+  {
+    for(std::vector<int>::size_type i = 0; i < faces.size(); i++)
+    {
+      for (int j = 0; j < MAX_FACE_VERTICIES; ++j)
+      {
+        CSVFile << faces[i].verticies[j].x << ',\0';
+        CSVFile << faces[i].verticies[j].y << ',\0';
+        CSVFile << faces[i].verticies[j].z << ',\0';
+        CSVFile << faces[i].verticies[j].w << '\n';
+      }
+    }
+    std::cout << "Wrote face values to: " << path + ".csv";
+  }
+  else
+  {
+    std::cout << "Error: " << path << " unable to write CSV file";
+  }
+
+  CSVFile.close();
 }
