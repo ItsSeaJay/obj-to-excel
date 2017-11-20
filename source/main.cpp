@@ -192,7 +192,7 @@ void outputVerticies(std::vector<Vertex> const verticies)
 {
   std::cout << "Verticies size: " << verticies.size() << '\n';
 
-  for(std::vector<int>::size_type i = 0; i != verticies.size(); i++)
+  for(std::vector<int>::size_type i = 0; i != verticies.size(); ++i)
   {
     std::cout << verticies[i].x << '\0';
     std::cout << verticies[i].y << '\0';
@@ -205,7 +205,7 @@ void outputFaces(std::vector<Face> const faces)
 {
   std::cout << "Faces size: " << faces.size() << '\n';
 
-  for(std::vector<int>::size_type i = 0; i < faces.size(); i++)
+  for(std::vector<int>::size_type i = 0; i < faces.size(); ++i)
   {
     for (int j = 0; j < MAX_FACE_VERTICIES; ++j)
     {
@@ -229,24 +229,25 @@ void horizontalRule(int const length)
 void outputCSV(std::string const path, std::vector<Face> const faces)
 {
   std::ofstream CSVFile(path + ".csv");
+  std::string line;
 
   if (CSVFile.is_open())
   {
-    for(std::vector<int>::size_type i = 0; i < faces.size(); i++)
+    for(std::vector<int>::size_type i = 0; i < faces.size(); ++i)
     {
       for (int j = 0; j < MAX_FACE_VERTICIES; ++j)
       {
-        CSVFile << faces[i].verticies[j].x << ',\0';
-        CSVFile << faces[i].verticies[j].y << ',\0';
-        CSVFile << faces[i].verticies[j].z << ',\0';
+        CSVFile << faces[i].verticies[j].x << ", ";
+        CSVFile << faces[i].verticies[j].y << ", ";
+        CSVFile << faces[i].verticies[j].z << ", ";
         CSVFile << faces[i].verticies[j].w << '\n';
       }
     }
-    std::cout << "Wrote face values to: " << path + ".csv";
+    std::cout << "Wrote face values to: " << path + ".csv" << '\n';
   }
   else
   {
-    std::cout << "Error: " << path << " unable to write CSV file";
+    std::cout << "Error: unable to write CSV file" << '\n';
   }
 
   CSVFile.close();
